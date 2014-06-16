@@ -1,0 +1,84 @@
+# Soundcloud Buzzword PI Challenge
+## - late "submission"
+
+I discovered the [Soundcloud
+Challenge](https://developers.soundcloud.com/blog/buzzwords-contest) to find
+their logo in the decimal digits of pi and wondered why the runtimes of the
+submissions were so long. A simple "grep $(cat pattern) pi-billion.txt" took 2
+seconds on my laptop computer. Sure, grep only looks for exact matches and not
+for similarities and throws some theory into the game, but finding approximate
+matches cannot be that much slower.
+
+In general, I am more the asymptotic-complexity guy, but I wanted to give it a
+shot and see what the most obvious algorithm would achieve when it is actually
+compiled against bare-metal.
+
+## Algorithm
+
+Just read the file into memory, distribute the work over 16 threads (my computer
+has 8 cores, so it sounded reasonable) and just check the pattern at every
+place, adding up the absolute difference.
+
+## Compile
+
+Install g++, libboost-thread-dev and run ./build.sh
+
+## Run
+
+```
+wget http://stuff.mit.edu/afs/sipb/contrib/pi/pi-billion.txt
+./pi
+```
+
+## Results
+
+```
+$ time ./pi 
+Size read: 1000000002
+Best candidate: 180 at 981165567
+000053743536020032496985553181128909983810344939134894807349584729687746183109884672
+Best candidate: 193 at 615021439
+711013755962005413585569680665595617589960342457936899752952250549898008094549797848
+Best candidate: 192 at 509863837
+130019949965424134524366868405264468588833190509687699654959636496916755646763968671
+Best candidate: 202 at 631227823
+550102559883030032554777740311168209788431215087224778318624465588678712221754465965
+Best candidate: 193 at 343577394
+208503759370245135490877462200175839969750453766432680245845143285985661373828688970
+Best candidate: 201 at 172774997
+215111928780482012520897962270216838965644335466189249857487383996686307669691678691
+Best candidate: 202 at 495641626
+110303267890506825622683540147254749969902412557758487928162489463936913076669793680
+Best candidate: 196 at 75975343
+870402479996214234001557832923050859979903649788689695954439755933903629798966788984
+Best candidate: 201 at 418687856
+313010165533501014339977123412784144087627356548087989687849156697462717096268968864
+Best candidate: 193 at 197342991
+300011495970664010077917573663456957498854662995598898697947677549686339433357728071
+Best candidate: 201 at 33699710
+140033386607302301794868774219061619792922298899595883488628908799175629697980561781
+Best candidate: 201 at 857040725
+054608682752505417173557931141155770726786440959799867729239471979889416795845186163
+Best candidate: 193 at 702340522
+510156458661130607192979267020226915882203362539599684666929466072856307246449876945
+Best candidate: 200 at 895800487
+096313288824502218872647112106172962585301381782296987691969465555886789677369979581
+Best candidate: 194 at 789652975
+142204297650171312983445842322141909755200787408739757838589593329762648444919386594
+Best candidate: 188 at 297640120
+082201638940102393659252475011295776958920282336494898427768768699465405437965994582
+
+real    0m19.050s
+user    2m23.892s
+sys     0m0.574s
+```
+
+20 seconds to sweep through the file. 70 LOC, no algorithmic optimization done.
+
+## Known Limitations
+
+Yeah, the results do not have neat PNGs, they are not sorted and actually even
+do not necessarily contain the top 10, but at least they contain the closest
+result. Furthermore, the similarity algorithm does not find visual
+similarity, but that could be easily tweaked and probably will not really
+affect the performance.
